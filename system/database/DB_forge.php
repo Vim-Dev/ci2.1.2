@@ -261,6 +261,7 @@ class CI_DB_forge {
 
 		foreach ($field as $k => $v)
 		{
+
 			$this->add_field(array($k => $field[$k]));
 
 			if (count($this->fields) == 0)
@@ -268,7 +269,17 @@ class CI_DB_forge {
 				show_error('Field information is required.');
 			}
 
-			$sql = $this->_alter_table('ADD', $this->db->dbprefix.$table, $this->fields, $after_field);
+
+			// _alter_table($alter_type, $table, $column_name, $column_definition = '', $default_value = '', $null = '', $after_field = '')
+			//$sql = $this->_alter_table('ADD', $this->db->dbprefix.$table, $this->fields, $after_field);
+
+			// FOR POSTGRE
+			$type = isset($v['type']) ? $v['type'] : 'text';
+			$default = isset($v['default']) ? $v['default'] : '';
+			$null = isset($v['null']) ? NULL : '';
+			$constraint =  isset($v['constraint']) ? $v['constraint'] : '';
+
+			$sql = $this->_alter_table('ADD', $this->db->dbprefix.$table, $k,$type,$default,$null,'',$constraint);
 
 			$this->_reset();
 

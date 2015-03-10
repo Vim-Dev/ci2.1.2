@@ -128,7 +128,7 @@ class CI_DB_postgre_forge extends CI_DB_forge {
 				}
 
 				// If this is an auto-incrementing primary key, use the serial data type instead
-				if (in_array($field, $primary_keys) && array_key_exists('AUTO_INCREMENT', $attributes) 
+				if (in_array($field, $primary_keys) && array_key_exists('AUTO_INCREMENT', $attributes)
 					&& $attributes['AUTO_INCREMENT'] === TRUE)
 				{
 					$sql .= ' SERIAL';
@@ -239,8 +239,9 @@ class CI_DB_postgre_forge extends CI_DB_forge {
 	 * @param	string	the field after which we should add the new field
 	 * @return	object
 	 */
-	function _alter_table($alter_type, $table, $column_name, $column_definition = '', $default_value = '', $null = '', $after_field = '')
+	function _alter_table($alter_type, $table, $column_name, $column_definition = '', $default_value = '', $null = '', $after_field = '',$constraint = '')
 	{
+
 		$sql = 'ALTER TABLE '.$this->db->_protect_identifiers($table)." $alter_type ".$this->db->_protect_identifiers($column_name);
 
 		// DROP has everything it needs now.
@@ -250,6 +251,11 @@ class CI_DB_postgre_forge extends CI_DB_forge {
 		}
 
 		$sql .= " $column_definition";
+
+		if ($constraint != '')
+		{
+			$sql .= "($constraint)";
+		}
 
 		if ($default_value != '')
 		{
@@ -269,6 +275,8 @@ class CI_DB_postgre_forge extends CI_DB_forge {
 		{
 			$sql .= ' AFTER ' . $this->db->_protect_identifiers($after_field);
 		}
+
+		//echo "<pre>"; var_dump( $sql, $alter_type, $table, $column_name, $column_definition , $default_value , $null , $after_field, $constraint ); exit;
 
 		return $sql;
 

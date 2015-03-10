@@ -151,7 +151,7 @@ class CI_Encrypt {
 		}
 
 		$dec = base64_decode($string);
-
+		
 		if ($this->_mcrypt_exists === TRUE)
 		{
 			if (($dec = $this->mcrypt_decode($dec, $key)) === FALSE)
@@ -161,9 +161,10 @@ class CI_Encrypt {
 		}
 		else
 		{
+		
 			$dec = $this->_xor_decode($dec, $key);
 		}
-
+		
 		return $dec;
 	}
 
@@ -317,7 +318,7 @@ class CI_Encrypt {
 	function mcrypt_encode($data, $key)
 	{
 		$init_size = mcrypt_get_iv_size($this->_get_cipher(), $this->_get_mode());
-		$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
+		$init_vect = mcrypt_create_iv($init_size, 256);
 		return $this->_add_cipher_noise($init_vect.mcrypt_encrypt($this->_get_cipher(), $key, $data, $this->_get_mode(), $init_vect), $key);
 	}
 
@@ -335,7 +336,7 @@ class CI_Encrypt {
 	{
 		$data = $this->_remove_cipher_noise($data, $key);
 		$init_size = mcrypt_get_iv_size($this->_get_cipher(), $this->_get_mode());
-
+		
 		if ($init_size > strlen($data))
 		{
 			return FALSE;
@@ -343,6 +344,7 @@ class CI_Encrypt {
 
 		$init_vect = substr($data, 0, $init_size);
 		$data = substr($data, $init_size);
+		
 		return rtrim(mcrypt_decrypt($this->_get_cipher(), $key, $data, $this->_get_mode(), $init_vect), "\0");
 	}
 
